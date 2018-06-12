@@ -116,4 +116,5 @@ void Widget::initVBO()
     glGenBuffers(1, &colorVbo);
     glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
     glBufferData(GL_ARRAY_BUFFER, colorsLen * sizeof(GLfloat), colors, GL_STATIC_DRAW);
+
 }

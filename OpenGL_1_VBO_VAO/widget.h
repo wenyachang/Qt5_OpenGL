@@ -34,7 +34,7 @@ private:
         0.0f,0.5f
     };
 
-    GLuint triIndexs[3] = {0,1,2};
+    GLuint triIndexs[3] = {0,2,1};
 
     GLfloat colors[12] = {
         1.0f, 0.0f, 0.0f, 1.0f,
