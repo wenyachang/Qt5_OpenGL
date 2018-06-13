@@ -33,7 +33,6 @@ void Widget::initializeGL()
     programId =program->programId();
 
     vertexLocation = glGetAttribLocation(programId,"vPosition");
-    colorLocation = glGetAttribLocation(programId,"vColor");
     texLocation = glGetAttribLocation(programId,"vTexCoord");
 
     display();
@@ -47,14 +46,25 @@ void Widget::paintGL()
     glActiveTexture(0);
     texture->bind(0);
 
-    QMatrix4x4 model;
-    model.rotate((float)time.elapsed()/10,QVector3D(1.0f,0.5f,0.0f));
-
-    //观察的模型，平移、旋转、缩放
-    program->setUniformValue(program->uniformLocation("model"),model);
-
     glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, sizeof(triIndexs), GL_UNSIGNED_INT,0);
+
+    QMatrix4x4 view;
+    GLfloat radius = 15.0f;
+    GLfloat camX = sin(((GLfloat)time.elapsed())/1000) * radius;
+    GLfloat camZ = cos(((GLfloat)time.elapsed())/1000) * radius;
+    view.lookAt(QVector3D(camX, 0.0f, camZ), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
+    //观察点
+    program->setUniformValue(program->uniformLocation("view"),view);
+
+    for(int i=0;i<10;i++)
+    {
+        QMatrix4x4 model;
+        model.translate(cubePositions[i]);
+        model.rotate((float)time.elapsed()/10,cubePositions[i]);
+        //观察的模型，平移、旋转、缩放
+        program->setUniformValue(program->uniformLocation("model"),model);
+        glDrawElements(GL_TRIANGLES, sizeof(triIndexs), GL_UNSIGNED_INT,0);
+    }
     glBindVertexArray(0);
 
     update();
@@ -108,12 +118,14 @@ void Widget::display()
 
     time.start();
     QMatrix4x4 projection,view;
-    projection.perspective(65,1.0f,0.1f,100.0f);
-    view.translate(QVector3D(0.0f,0.0f,-1.0f));
-    view.scale(0.1);
+    projection.perspective(75,1.0f,0.1f,100.0f);
+//    view.translate(QVector3D(0.0f,0.0f,-1.0f));
+//    view.scale(0.2);
+
+    //view.lookAt(QVector3D(0.0f,0.0f,10.0f),QVector3D(0.0f,0.0f,0.0f),QVector3D(0.0f,1.0f,0.0f));
 
     //观察点
-    program->setUniformValue(program->uniformLocation("view"),view);
+    //program->setUniformValue(program->uniformLocation("view"),view);
 
     //perspective 投影矩阵
     program->setUniformValue(program->uniformLocation("projection"),projection);
